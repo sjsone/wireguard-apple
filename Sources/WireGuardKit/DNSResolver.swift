@@ -129,10 +129,8 @@ extension Endpoint {
         } else {
             fatalError()
         }
-        #elseif os(macOS)
+        #elseif os(macOS) || os(tvOS)
         return self
-        #else
-        #error("Unimplemented")
         #endif
     }
 }

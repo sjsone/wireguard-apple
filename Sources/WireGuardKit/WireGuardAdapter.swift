@@ -420,7 +420,8 @@ public class WireGuardAdapter {
         if case .started(let handle, _) = self.state {
             wgBumpSockets(handle)
         }
-        #elseif os(iOS)
+        #elseif os(iOS) || os(tvOS)
+        // tvOS: treat the same as iOS — handle connectivity changes
         switch self.state {
         case .started(let handle, let settingsGenerator):
             if path.status.isSatisfiable {
@@ -428,7 +429,9 @@ public class WireGuardAdapter {
                 self.logEndpointResolutionResults(resolutionResults)
 
                 wgSetConfig(handle, wgConfig)
+                #if os(iOS)
                 wgDisableSomeRoamingForBrokenMobileSemantics(handle)
+                #endif
                 wgBumpSockets(handle)
             } else {
                 self.logHandler(.verbose, "Connectivity offline, pausing backend.")
@@ -460,8 +463,6 @@ public class WireGuardAdapter {
             // no-op
             break
         }
-        #else
-        #error("Unsupported")
         #endif
     }
 }
